@@ -31,6 +31,11 @@ public class ScoreService {
 		ScoreEntity scoreEntity = totalScoreRepository.updateTotalScore(gameResult);
 		return toScoreOut(scoreEntity);
 	}
+	
+	public ScoreOut resetPlayerScore(String id) {
+		ScoreEntity scoreEntity = playerScoreRepository.resetPlayerScore(id);
+		return toScoreOut(scoreEntity);
+	}
 
 	private ScoreOut toScoreOut(ScoreEntity scoreEntity) {
 		ScoreOut scoreOut = new ScoreOut();
@@ -44,6 +49,8 @@ public class ScoreService {
 		scoreOut.setTotalGames(total);
 		return scoreOut;
 	}
+
+
 
 
 }

@@ -20,9 +20,9 @@ import com.dns.rpslottolandbackend.service.ScoreService;
 class ScoreControllerTest {
 
 	private ScoreUpdateStrategy scoreUpdateStrategy;
-	
+
 	private PlayerScoreRepository playerScoreRepository;
-	
+
 	private TotalScoreRepository totalScoreRepository;
 
 	private ScoreService testInstance;
@@ -34,25 +34,68 @@ class ScoreControllerTest {
 		totalScoreRepository = new TotalScoreRepository(scoreUpdateStrategy);
 		testInstance = new ScoreService(playerScoreRepository, totalScoreRepository);
 	}
-	
+
 	@Test
 	void testAllInputOkReturnsNotNull() {
 		ScoreOut result = testInstance.getTotalScore();
 		assertNotNull(result);
 	}
 
-	
+	@Test
+	void testTotalScoresAreThreadSafe() throws InterruptedException {
+		int iterationsWin = 2000;
+		int iterationsLoss = 2001;
+		int iterationsDraw = 2002;
+
+		Runnable player1Win = () -> {
+			for (int i = 0; i < iterationsWin; i++) {
+				totalScoreRepository.updateTotalScore(GameResult.WIN_PLAYER_1);
+			}
+		};
+
+		Runnable player1Loss = () -> {
+			for (int i = 0; i < iterationsLoss; i++) {
+				totalScoreRepository.updateTotalScore(GameResult.WIN_PLAYER_2);
+			}
+		};
+
+		Runnable player1Draw = () -> {
+			for (int i = 0; i < iterationsDraw; i++) {
+				totalScoreRepository.updateTotalScore(GameResult.DRAW);
+			}
+		};
+
+		Thread t1 = new Thread(player1Win, "Win");
+		Thread t2 = new Thread(player1Loss, "Loss");
+		Thread t3 = new Thread(player1Draw, "Draw");
+
+		List<Thread> allThreads = Arrays.asList(t1, t2, t3);
+
+		for (Thread thread : allThreads) {
+			thread.start();
+		}
+		for (Thread thread : allThreads) {
+			thread.join();
+		}
+
+		assertEquals(iterationsWin, totalScoreRepository.getTotalScore().getPlayer1Wins());
+		assertEquals(iterationsLoss, totalScoreRepository.getTotalScore().getPlayer2Wins());
+		assertEquals(iterationsDraw, totalScoreRepository.getTotalScore().getDraws());
+	}
+
 	@Test
 	void testPlayerScoresAreThreadSafe() throws InterruptedException {
 		String id1 = "1";
 		String id2 = "2";
+
 		int iterationsWin1 = 1000;
 		int iterationsLoss1 = 1001;
 		int iterationsDraw1 = 1002;
+
 		int iterationsWin2 = 1003;
 		int iterationsLoss2 = 1004;
 		int iterationsDraw2 = 1005;
-		
+
 		Runnable player1Win = () -> {
 			ScoreEntity lastScoreEntity = null;
 			for (int i = 0; i < iterationsWin1; i++) {
@@ -68,7 +111,7 @@ class ScoreControllerTest {
 			}
 			assertEquals(iterationsLoss1, lastScoreEntity.getPlayer2Wins());
 		};
-		
+
 		Runnable player1Draw = () -> {
 			ScoreEntity lastScoreEntity = null;
 			for (int i = 0; i < iterationsDraw1; i++) {
@@ -76,7 +119,7 @@ class ScoreControllerTest {
 			}
 			assertEquals(iterationsDraw1, lastScoreEntity.getDraws());
 		};
-		
+
 		Runnable player2Win = () -> {
 			ScoreEntity lastScoreEntity = null;
 			for (int i = 0; i < iterationsWin2; i++) {
@@ -92,7 +135,7 @@ class ScoreControllerTest {
 			}
 			assertEquals(iterationsLoss2, lastScoreEntity.getPlayer2Wins());
 		};
-		
+
 		Runnable player2Draw = () -> {
 			ScoreEntity lastScoreEntity = null;
 			for (int i = 0; i < iterationsDraw2; i++) {
@@ -100,64 +143,114 @@ class ScoreControllerTest {
 			}
 			assertEquals(iterationsDraw2, lastScoreEntity.getDraws());
 		};
-		
+
 		Thread t1 = new Thread(player1Win, "Win1");
 		Thread t2 = new Thread(player1Loss, "Loss1");
 		Thread t3 = new Thread(player1Draw, "Draw1");
 		Thread t4 = new Thread(player2Win, "Win2");
 		Thread t5 = new Thread(player2Loss, "Loss2");
 		Thread t6 = new Thread(player2Draw, "Draw2");
-		
+
 		List<Thread> allThreads = Arrays.asList(t1, t2, t3, t4, t5, t6);
-		
+
 		for (Thread thread : allThreads) {
 			thread.start();
 		}
-		
+
 		for (Thread thread : allThreads) {
 			thread.join();
 		}
 	}
-	
+
 	@Test
-	void testTotalScoresAreThreadSafe() throws InterruptedException {
-		int iterationsWin = 2000;
-		int iterationsLoss = 2001;
-		int iterationsDraw = 2002;
-		
+	void testResetPlayerScoresIsThreadSafe() throws InterruptedException {
+		String id1 = "1";
+		String id2 = "2";
+
+		int iterationsWin1 = 1000;
+		int iterationsLoss1 = 1001;
+		int iterationsDraw1 = 1002;
+
+		int iterationsWin2 = 1003;
+		int iterationsLoss2 = 1004;
+		int iterationsDraw2 = 1005;
+
+		int iterationsReset1 = 1006;
+
 		Runnable player1Win = () -> {
-			for (int i = 0; i < iterationsWin; i++) {
-				totalScoreRepository.updateTotalScore(GameResult.WIN_PLAYER_1);
+			for (int i = 0; i < iterationsWin1; i++) {
+				playerScoreRepository.updatePlayerScore(id1, GameResult.WIN_PLAYER_1);
 			}
 		};
 
 		Runnable player1Loss = () -> {
-			for (int i = 0; i < iterationsLoss; i++) {
-				totalScoreRepository.updateTotalScore(GameResult.WIN_PLAYER_2);
+			for (int i = 0; i < iterationsLoss1; i++) {
+				playerScoreRepository.updatePlayerScore(id1, GameResult.WIN_PLAYER_2);
 			}
 		};
-		
+
 		Runnable player1Draw = () -> {
-			for (int i = 0; i < iterationsDraw; i++) {
-				totalScoreRepository.updateTotalScore(GameResult.DRAW);
+			for (int i = 0; i < iterationsDraw1; i++) {
+				playerScoreRepository.updatePlayerScore(id1, GameResult.DRAW);
 			}
 		};
-		
-		Thread t1 = new Thread(player1Win, "Win");
-		Thread t2 = new Thread(player1Loss, "Loss");
-		Thread t3 = new Thread(player1Draw, "Draw");
-		
-		List<Thread> allThreads = Arrays.asList(t1, t2, t3);
-		
+
+		Runnable player2Win = () -> {
+			for (int i = 0; i < iterationsWin2; i++) {
+				playerScoreRepository.updatePlayerScore(id2, GameResult.WIN_PLAYER_1);
+			}
+		};
+
+		Runnable player2Loss = () -> {
+			for (int i = 0; i < iterationsLoss2; i++) {
+				playerScoreRepository.updatePlayerScore(id2, GameResult.WIN_PLAYER_2);
+			}
+		};
+
+		Runnable player2Draw = () -> {
+			for (int i = 0; i < iterationsDraw2; i++) {
+				playerScoreRepository.updatePlayerScore(id2, GameResult.DRAW);
+			}
+		};
+
+		Runnable player1Reset = () -> {
+			for (int i = 0; i < iterationsReset1; i++) {
+				playerScoreRepository.resetPlayerScore(id1);
+			}
+		};
+
+		Thread t1 = new Thread(player1Win, "Win1");
+		Thread t2 = new Thread(player1Loss, "Loss1");
+		Thread t3 = new Thread(player1Draw, "Draw1");
+		Thread t4 = new Thread(player2Win, "Win2");
+		Thread t5 = new Thread(player2Loss, "Loss2");
+		Thread t6 = new Thread(player2Draw, "Draw2");
+		Thread t7 = new Thread(player1Reset, "Reset1");
+
+		List<Thread> allThreads = Arrays.asList(t1, t2, t3, t4, t5, t6, t7);
+
 		for (Thread thread : allThreads) {
 			thread.start();
 		}
+
 		for (Thread thread : allThreads) {
 			thread.join();
 		}
-		
-		assertEquals(iterationsWin, totalScoreRepository.getTotalScore().getPlayer1Wins());
-		assertEquals(iterationsLoss, totalScoreRepository.getTotalScore().getPlayer2Wins());
-		assertEquals(iterationsDraw, totalScoreRepository.getTotalScore().getDraws());
+
+		ScoreEntity scoreEntity1Reset = playerScoreRepository.resetPlayerScore(id1);
+		assertEquals(0, scoreEntity1Reset.getPlayer1Wins());
+		assertEquals(0, scoreEntity1Reset.getPlayer2Wins());
+		assertEquals(0, scoreEntity1Reset.getDraws());
+
+		ScoreEntity scoreEntity2 = playerScoreRepository.updatePlayerScore(id2, GameResult.WIN_PLAYER_1);
+		assertEquals(iterationsWin2 + 1, scoreEntity2.getPlayer1Wins());
+		assertEquals(iterationsLoss2, scoreEntity2.getPlayer2Wins());
+		assertEquals(iterationsDraw2, scoreEntity2.getDraws());
+
+		ScoreEntity scoreEntity2Reset = playerScoreRepository.resetPlayerScore(id2);
+		assertEquals(0, scoreEntity2Reset.getPlayer1Wins());
+		assertEquals(0, scoreEntity2Reset.getPlayer2Wins());
+		assertEquals(0, scoreEntity2Reset.getDraws());
 	}
+
 }

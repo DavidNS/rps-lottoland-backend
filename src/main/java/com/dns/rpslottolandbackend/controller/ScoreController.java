@@ -17,4 +17,7 @@ public class ScoreController {
 		return scoreService.getTotalScore();
 	}
 
+	public ScoreOut resetPlayerScore(String id) {
+		return scoreService.resetPlayerScore(id);
+	}
 }

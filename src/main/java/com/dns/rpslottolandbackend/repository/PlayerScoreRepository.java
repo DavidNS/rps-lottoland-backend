@@ -25,9 +25,7 @@ public class PlayerScoreRepository {
 	private final ConcurrentHashMap<String, Lock> userIdVsLocks = new ConcurrentHashMap<>();
 
 	public ScoreEntity updatePlayerScore(String userId, GameResult gameResult) {
-		ReentrantLock newLock = new ReentrantLock(true);
-		Lock lock = userIdVsLocks.putIfAbsent(userId, newLock);
-		FunctionalLock functionalLock = tryLock(lock, newLock);
+		FunctionalLock functionalLock = getLock(userId);
 		if (functionalLock.locked) {
 			try {
 				ScoreEntity scoreEntity = userIdVsScore.getOrDefault(userId, new ScoreEntity());
@@ -40,6 +38,29 @@ public class PlayerScoreRepository {
 		}
 		throw new RuntimeException("Unexpected error trying to acquire user lock");
 	}
+	
+
+	public ScoreEntity resetPlayerScore(String userId) {
+		FunctionalLock functionalLock = getLock(userId);
+		if (functionalLock.locked) {
+			try {
+				ScoreEntity scoreEntity = new ScoreEntity();
+				userIdVsScore.put(userId, scoreEntity);
+				return scoreEntity;
+			} finally {
+				functionalLock.lock.unlock();
+			}
+		}
+		throw new RuntimeException("Unexpected error trying to acquire user lock");
+	}
+
+
+	private FunctionalLock getLock(String userId) {
+		ReentrantLock newLock = new ReentrantLock(true);
+		Lock lock = userIdVsLocks.putIfAbsent(userId, newLock);
+		FunctionalLock functionalLock = tryLock(lock, newLock);
+		return functionalLock;
+	}
 
 	private FunctionalLock tryLock(Lock lock, Lock newLock) {
 		try {
@@ -51,7 +72,6 @@ public class PlayerScoreRepository {
 				return new FunctionalLock(locked, newLock);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			return new FunctionalLock(false, newLock);
 		}
 	}
@@ -64,5 +84,6 @@ public class PlayerScoreRepository {
 
 		private final Lock lock;
 	}
+
 
 }

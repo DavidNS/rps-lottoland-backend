@@ -22,9 +22,9 @@ import com.dns.rpslottolandbackend.service.ScoreService;
 class GameControllerTest {
 
 	private ScoreUpdateStrategy scoreUpdateStrategy;
-	
+
 	private PlayerScoreRepository playerScoreRepository;
-	
+
 	private TotalScoreRepository totalScoreRepository;
 
 	private GameController testInstance;
