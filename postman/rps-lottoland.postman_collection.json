@@ -1,0 +1,282 @@
+{
+	"info": {
+		"_postman_id": "8fe60acd-4cc6-46ad-9a64-c3771c573e69",
+		"name": "rps-lottoland",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "New game success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const exectedStatus = 200;",
+							"const expetedResponseTime = 100;",
+							"",
+							"pm.test(\"Response status: \"+exectedStatus, function () {",
+							"    pm.response.to.have.status(exectedStatus);",
+							"});",
+							"",
+							"pm.test(\"Response time: \"+expetedResponseTime, function ()  {",
+							"    pm.expect(pm.response.responseTime).to.be.below(expetedResponseTime);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-device-id",
+						"value": "1",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/v1/games/players",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"games",
+						"players"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New game missing header",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const exectedStatus = 400;",
+							"const expetedResponseTime = 100;",
+							"var expectedJson = {",
+							"    \"timestamp\": \"2024-04-28T22:54:00.649107202Z\",",
+							"    \"status\": 400,",
+							"    \"error\": \"Bad Request\",",
+							"    \"causes\": [",
+							"        \"Required request header 'x-device-id' for method parameter type String is not present\"",
+							"    ],",
+							"    \"path\": \"/v1/games/players\"",
+							"}",
+							"",
+							"pm.test(\"Response status: \"+exectedStatus, function () {",
+							"    pm.response.to.have.status(exectedStatus);",
+							"});",
+							"",
+							"pm.test(\"Response time: \"+expetedResponseTime, function ()  {",
+							"    pm.expect(pm.response.responseTime).to.be.below(expetedResponseTime);",
+							"});",
+							"",
+							"pm.test(\"Body\", function () {",
+							"    pm.response.to.be.json;",
+							"    const responseJson = pm.response.json();",
+							"    expectedJson.timestamp=responseJson.timestamp;",
+							"    pm.expect(expectedJson).to.eql(responseJson);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/v1/games/players",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"games",
+						"players"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New game blank header",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const exectedStatus = 400;",
+							"const expetedResponseTime = 100;",
+							"var expectedJson = {",
+							"    \"timestamp\": \"2024-04-28T22:55:07.025682746Z\",",
+							"    \"status\": 400,",
+							"    \"error\": \"Bad Request\",",
+							"    \"causes\": [",
+							"        \"x-device-id headder cannot be empty or null\"",
+							"    ],",
+							"    \"path\": \"/v1/games/players\"",
+							"}",
+							"",
+							"pm.test(\"Response status: \"+exectedStatus, function () {",
+							"    pm.response.to.have.status(exectedStatus);",
+							"});",
+							"",
+							"pm.test(\"Response time: \"+expetedResponseTime, function ()  {",
+							"    pm.expect(pm.response.responseTime).to.be.below(expetedResponseTime);",
+							"});",
+							"",
+							"pm.test(\"Body\", function () {",
+							"    pm.response.to.be.json;",
+							"    const responseJson = pm.response.json();",
+							"    expectedJson.timestamp=responseJson.timestamp;",
+							"    pm.expect(expectedJson).to.eql(responseJson);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-device-id",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/v1/games/players",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"games",
+						"players"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get total scores success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const exectedStatus = 200;",
+							"const expetedResponseTime = 100;",
+							"",
+							"pm.test(\"Response status: \"+exectedStatus, function () {",
+							"    pm.response.to.have.status(exectedStatus);",
+							"});",
+							"",
+							"pm.test(\"Response time: \"+expetedResponseTime, function ()  {",
+							"    pm.expect(pm.response.responseTime).to.be.below(expetedResponseTime);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-device-id",
+						"value": "1",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/v1/scores/totals",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"scores",
+						"totals"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete player scores success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const exectedStatus = 200;",
+							"const expetedResponseTime = 100;",
+							"var expectedJson = {",
+							"    \"totalGames\": 0,",
+							"    \"player1Wins\": 0,",
+							"    \"player2Wins\": 0,",
+							"    \"draws\": 0",
+							"}",
+							"",
+							"pm.test(\"Response status: \"+exectedStatus, function () {",
+							"    pm.response.to.have.status(exectedStatus);",
+							"});",
+							"",
+							"pm.test(\"Response time: \"+expetedResponseTime, function ()  {",
+							"    pm.expect(pm.response.responseTime).to.be.below(expetedResponseTime);",
+							"});",
+							"",
+							"pm.test(\"Body\", function () {",
+							"    pm.response.to.be.json;",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(expectedJson).to.eql(responseJson);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "x-device-id",
+						"value": "1",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/v1/scores/players",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"scores",
+						"players"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
