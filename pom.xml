@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>com.dns</groupId>
 	<artifactId>rps-lottoland-backend</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<name>rps-lottoland-backend</name>
 	<description>Rock-Paper-Scissors test for lottoland</description>
 	<properties>
