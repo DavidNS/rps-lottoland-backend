@@ -1,0 +1,8 @@
+version: '3.3'
+services:
+  rps-lottoland-backend:
+    build: .
+    container_name: rps-lottoland-backend
+    restart: always
+    ports:
+      - "8080:8080"
