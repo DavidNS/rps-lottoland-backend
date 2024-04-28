@@ -15,13 +15,7 @@ public class TotalScoreRepository {
 
 	private final ScoreUpdateStrategy scoreUpdateStrategy;
 
-	private final AtomicReference<ScoreEntity> totalScoreEntity = intializeTotalScore();
-
-	private static AtomicReference<ScoreEntity> intializeTotalScore() {
-		AtomicReference<ScoreEntity> totalScoreEntity = new AtomicReference<>();
-		totalScoreEntity.set(new ScoreEntity());
-		return totalScoreEntity;
-	}
+	private final AtomicReference<ScoreEntity> totalScoreEntity = new AtomicReference<>(new ScoreEntity());
 
 	public ScoreEntity updateTotalScore(GameResult gameResult) {
 		return totalScoreEntity.updateAndGet((s) -> {

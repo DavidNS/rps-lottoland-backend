@@ -22,8 +22,12 @@ public class ScoreService {
 		return toScoreOut(totalScoreRepository.getTotalScore());
 	}
 
-	public ScoreOut saveNewPlayerScore(String id, GameResult gameResult) {
-		ScoreEntity savedScoreEntity = playerScoreRepository.updatePlayerScore(id, gameResult);
+	public ScoreOut getPlayerScore(String userId) {
+		return toScoreOut(playerScoreRepository.getPlayerScore(userId));
+	}
+
+	public ScoreOut saveNewPlayerScore(String userId, GameResult gameResult) {
+		ScoreEntity savedScoreEntity = playerScoreRepository.updatePlayerScore(userId, gameResult);
 		return toScoreOut(savedScoreEntity);
 	}
 
@@ -31,9 +35,9 @@ public class ScoreService {
 		ScoreEntity scoreEntity = totalScoreRepository.updateTotalScore(gameResult);
 		return toScoreOut(scoreEntity);
 	}
-	
-	public ScoreOut resetPlayerScore(String id) {
-		ScoreEntity scoreEntity = playerScoreRepository.resetPlayerScore(id);
+
+	public ScoreOut resetPlayerScore(String userId) {
+		ScoreEntity scoreEntity = playerScoreRepository.resetPlayerScore(userId);
 		return toScoreOut(scoreEntity);
 	}
 
@@ -49,8 +53,5 @@ public class ScoreService {
 		scoreOut.setTotalGames(total);
 		return scoreOut;
 	}
-
-
-
 
 }
