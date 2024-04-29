@@ -15,7 +15,7 @@ Open a terminal from the root folder of this project and run:
 
 ```bash
 mvn clean install
-java -jar target/rps-lottoland-backend-0.0.1-SNAPSHOT.jar
+java -jar target/rps-lottoland-backend-1.0.1-SNAPSHOT.jar
 
 ```
 
